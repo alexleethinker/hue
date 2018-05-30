@@ -1560,7 +1560,13 @@ ANALYTIC_DB = 'analyticdb'
 
 
 class ClusterConfig():
-
+  """
+  Configuration of the apps and engines that each individual user sees on the core Hue.
+  Fine grained Hue permissions and available apps are leveraged here in order to render the correct UI.
+  
+  TODO: rename to HueConfig
+  TODO: get list of contexts dynamically
+  """
   def __init__(self, user, apps=None, cluster_type='ini'):
     self.user = user
     self.apps = appmanager.get_apps_dict(self.user) if apps is None else apps

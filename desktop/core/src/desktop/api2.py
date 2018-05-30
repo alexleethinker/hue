@@ -79,11 +79,15 @@ def get_config(request):
 def get_context(request, app, engine):
   context = {}
 
+  # TODO get list of contexts dynamically
   if app == 'browser':
     if engine == 'hdfs':
       context['namespaces'] = [{'name': 'storage-finance'}, {'name': 'storage-dev'}]
     elif engine == 'hive':
-      context['namespaces'] = [{'name': 'finance'}, {'name': 'dev'}]
+      context['namespaces'] = [
+        {'name': 'finance'},
+        {'name': 'dev'}
+      ]
   elif app == 'editor':
     context['compute'] = [{'name': 'finance-pool'}, {'name': 'test-small'}, {'name': 'global'}]
 

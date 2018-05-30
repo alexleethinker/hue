@@ -27,7 +27,6 @@ from django.utils.translation import ugettext as _
 from desktop.lib.django_util import format_preserving_redirect
 from desktop.lib.exceptions_renderable import PopupException
 from desktop.lib.parameterization import substitute_variables
-from desktop.models import Cluster, ANALYTIC_DB
 from desktop.lib.view_util import location_to_url
 from indexer.file_format import HiveFormat
 
@@ -47,17 +46,12 @@ DBMS_CACHE = {}
 DBMS_CACHE_LOCK = threading.Lock()
 
 
-def get(user, query_server=None):
+def get(user, query_server=None, cluster=None):
   global DBMS_CACHE
   global DBMS_CACHE_LOCK
 
   if query_server is None:
-    cluster_type = Cluster(user).get_type()
-    if cluster_type == ANALYTIC_DB:
-      kwargs = {'name': 'impala'}
-    else:
-      kwargs = {}
-    query_server = get_query_server_config(**kwargs)
+    query_server = get_query_server_config(cluster=cluster)
 
   DBMS_CACHE_LOCK.acquire()
   try:
@@ -80,16 +74,22 @@ def get(user, query_server=None):
     DBMS_CACHE_LOCK.release()
 
 
-def get_query_server_config(name='beeswax', server=None):
+def get_query_server_config(name='beeswax', server=None, cluster=None):
+  print 'configggg'
+  print cluster
+
+  if cluster:
+    name = 'impala'
+
   if name == 'impala':
     from impala.dbms import get_query_server_config as impala_query_server_config
-    query_server = impala_query_server_config()
+    query_server = impala_query_server_config(cluster=cluster)
   else:
     kerberos_principal = hive_site.get_hiveserver2_kerberos_principal(HIVE_SERVER_HOST.get())
 
     query_server = {
         'server_name': name,
-        'server_host': HIVE_SERVER_HOST.get(),
+        'server_host': HIVE_SERVER_HOST.get() if cluster is not None else 'nightly6x-unsecure-1.gce.cloudera.com',
         'server_port': HIVE_SERVER_PORT.get(),
         'principal': kerberos_principal,
         'http_url': '%(protocol)s://%(host)s:%(port)s/%(end_point)s' % {

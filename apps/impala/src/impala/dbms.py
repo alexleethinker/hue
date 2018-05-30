@@ -31,10 +31,11 @@ from impala import conf
 LOG = logging.getLogger(__name__)
 
 
-def get_query_server_config():
+def get_query_server_config(cluster=None):
   query_server = {
         'server_name': 'impala',
-        'server_host': conf.SERVER_HOST.get(),
+        # TODO: from a cluster id, get the hostname
+        'server_host': conf.SERVER_HOST.get() if cluster is None else 'nightly6x-unsecure-2.gce.cloudera.com',
         'server_port': conf.SERVER_PORT.get(),
         'principal': conf.IMPALA_PRINCIPAL.get(),
         'impersonation_enabled': conf.IMPERSONATION_ENABLED.get(),
