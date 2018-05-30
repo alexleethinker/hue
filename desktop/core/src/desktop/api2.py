@@ -76,6 +76,23 @@ def get_config(request):
 
 
 @api_error_handler
+def get_context(request, app, engine):
+  context = {}
+
+  if app == 'browser':
+    if engine == 'hdfs':
+      context['namespaces'] = [{'name': 'storage-finance'}, {'name': 'storage-dev'}]
+    elif engine == 'hive':
+      context['namespaces'] = [{'name': 'finance'}, {'name': 'dev'}]
+  elif app == 'editor':
+    context['compute'] = [{'name': 'finance-pool'}, {'name': 'test-small'}, {'name': 'global'}]
+
+  context['status'] = 0
+
+  return JsonResponse(context)
+
+
+@api_error_handler
 def search_documents(request):
   """
   Returns the directories and documents based on given params that are accessible by the current user
