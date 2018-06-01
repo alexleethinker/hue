@@ -17,6 +17,7 @@
 <%!
   from desktop import conf
   from django.utils.translation import ugettext as _
+  from django.conf.urls import url
   from desktop.views import commonheader, commonfooter
   from useradmin.hue_password_policy import is_password_policy_enabled, get_password_hint
   from desktop.conf import is_hue4
@@ -69,88 +70,89 @@ ${ commonheader(_("Welcome to Hue"), "login", user, request, "50px", True, True)
 
 <div class="login-container">
 
-  <form method="POST" action="${action}" autocomplete="off">
-    ${ csrf_token(request) | n,unicode }
-
-    <div class="logo">
-      %if is_hue4():
-      <svg style="height: 80px; width: 200px;"><use xlink:href="#hi-logo"></use></svg>
-      %else:
-      <img src="${ static('desktop/art/hue-login-logo-ellie@2x.png') }" width="70" height="70" alt="${ _('Hue logo') }">
-      %endif
-    </div>
-    <h3>Query. Explore. Repeat.</h3>
-
-    %if first_login_ever:
-      <div class="alert alert-info center">
-        ${_('Since this is your first time logging in, pick any username and password. Be sure to remember these, as')}
-        <strong>${_('they will become your Hue superuser credentials.')}</strong>
-        %if is_password_policy_enabled():
-        <p>${get_password_hint()}</p>
-        %endif
-      </div>
-    %endif
-
-    <div class="text-input
-      %if backend_names == ['OAuthBackend']:
-        hide
-      %endif
-      %if form['username'].errors or (not form['username'].errors and not form['password'].errors and login_errors):
-        error
-      %endif
-    ">
-      ${ form['username'] | n,unicode }
-    </div>
-
-    ${ form['username'].errors | n,unicode }
-
-    <div class="text-input
-      %if 'AllowAllBackend' in backend_names or backend_names == ['OAuthBackend']:
-        hide
-      %endif
-      %if form['password'].errors or (not form['username'].errors and not form['password'].errors and login_errors):
-        error
-      %endif
-    ">
-      ${ form['password'] | n,unicode }
-    </div>
-
-    ${ form['password'].errors | n,unicode }
-
-    %if active_directory:
-    <div
-      %if 'server' in form.fields and len(form.fields['server'].choices) == 1:
-        class="hide"
-      %endif
-      >
-      %if 'server' in form.fields:
-        ${ form['server'] | n,unicode }
-      %endif
-    </div>
-    %endif
-
-    %if 'ImpersonationBackend' in backend_names:
-    <div class="text-input">
-      ${ form['login_as'] | n,unicode }
-    </div>
-    %endif
-
-    %if login_errors and not form['username'].errors and not form['password'].errors:
-      %if form.errors:
-        % for error in form.errors:
-         ${ form.errors[error]|unicode,n }
-        % endfor
-      %endif
-    %endif
-
-    %if first_login_ever:
-      <input type="submit" class="btn btn-primary" value="${_('Create Account')}"/>
-    %else:
-      <input type="submit" class="btn btn-primary" value="${_('Sign In')}"/>
-    %endif
-    <input type="hidden" name="next" value="${next}"/>
-
-  </form>
+    <a href="{% url 'oidc.oidc_authentication_init' %}">Login</a>
+##   <form method="POST" action="${action}" autocomplete="off">
+##     ${ csrf_token(request) | n,unicode }
+##
+##     <div class="logo">
+##       %if is_hue4():
+##       <svg style="height: 80px; width: 200px;"><use xlink:href="#hi-logo"></use></svg>
+##       %else:
+##       <img src="${ static('desktop/art/hue-login-logo-ellie@2x.png') }" width="70" height="70" alt="${ _('Hue logo') }">
+##       %endif
+##     </div>
+##     <h3>Query. Explore. Repeat.</h3>
+##
+##     %if first_login_ever:
+##       <div class="alert alert-info center">
+##         ${_('Since this is your first time logging in, pick any username and password. Be sure to remember these, as')}
+##         <strong>${_('they will become your Hue superuser credentials.')}</strong>
+##         %if is_password_policy_enabled():
+##         <p>${get_password_hint()}</p>
+##         %endif
+##       </div>
+##     %endif
+##
+##     <div class="text-input
+##       %if backend_names == ['OAuthBackend']:
+##         hide
+##       %endif
+##       %if form['username'].errors or (not form['username'].errors and not form['password'].errors and login_errors):
+##         error
+##       %endif
+##     ">
+##       ${ form['username'] | n,unicode }
+##     </div>
+##
+##     ${ form['username'].errors | n,unicode }
+##
+##     <div class="text-input
+##       %if 'AllowAllBackend' in backend_names or backend_names == ['OAuthBackend']:
+##         hide
+##       %endif
+##       %if form['password'].errors or (not form['username'].errors and not form['password'].errors and login_errors):
+##         error
+##       %endif
+##     ">
+##       ${ form['password'] | n,unicode }
+##     </div>
+##
+##     ${ form['password'].errors | n,unicode }
+##
+##     %if active_directory:
+##     <div
+##       %if 'server' in form.fields and len(form.fields['server'].choices) == 1:
+##         class="hide"
+##       %endif
+##       >
+##       %if 'server' in form.fields:
+##         ${ form['server'] | n,unicode }
+##       %endif
+##     </div>
+##     %endif
+##
+##     %if 'ImpersonationBackend' in backend_names:
+##     <div class="text-input">
+##       ${ form['login_as'] | n,unicode }
+##     </div>
+##     %endif
+##
+##     %if login_errors and not form['username'].errors and not form['password'].errors:
+##       %if form.errors:
+##         % for error in form.errors:
+##          ${ form.errors[error]|unicode,n }
+##         % endfor
+##       %endif
+##     %endif
+##
+##     %if first_login_ever:
+##       <input type="submit" class="btn btn-primary" value="${_('Create Account')}"/>
+##     %else:
+##       <input type="submit" class="btn btn-primary" value="${_('Sign In')}"/>
+##     %endif
+##     <input type="hidden" name="next" value="${next}"/>
+##
+##   </form>
 
   %if conf.CUSTOM.LOGIN_SPLASH_HTML.get():
   <div class="alert alert-info" id="login-splash">

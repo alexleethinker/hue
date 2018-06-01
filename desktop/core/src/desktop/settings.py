@@ -449,6 +449,34 @@ if OPENID_AUTHENTICATION:
   LOGIN_URL = '/openid/login'
   SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+# ===================== mozilla_django_oidc =========================
+
+OPENIDC_AUTHENTICATION = 'mozilla_django_oidc.auth.OIDCAuthenticationBackend' in AUTHENTICATION_BACKENDS
+if OPENIDC_AUTHENTICATION:
+  INSTALLED_APPS.append('mozilla_django_oidc')
+  SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+  MIDDLEWARE_CLASSES.append('mozilla_django_oidc.middleware.SessionRefresh')
+
+  # Add 'mozilla_django_oidc' authentication backend in hue.ini
+  #AUTHENTICATION_BACKENDS = (
+  #  'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+  #)
+
+  # OIDC_RP_SIGN_ALGO =
+
+  OIDC_OP_AUTHORIZATION_ENDPOINT = 'http://localhost:8080/realms/Cloudera/protocol/openid-connect/auth'
+  OIDC_OP_TOKEN_ENDPOINT = 'http://localhost:8080/realms/Cloudera/protocol/openid-connect/token'
+  OIDC_OP_USER_ENDPOINT = 'http://localhost:8080/realms/Cloudera/protocol/openid-connect/userinfo'
+
+  LOGIN_REDIRECT_URL = "http://localhost:8601/"
+  #LOGOUT_REDIRECT_URL = "<URL path to redirect to after logout>"
+
+  OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
+
+  OIDC_RP_CLIENT_ID = 'Hue-dev'
+  OIDC_RP_CLIENT_SECRET = '20a3f4b8-8570-4626-a71e-5216016eddd4'
+
 # OAuth
 OAUTH_AUTHENTICATION='liboauth.backend.OAuthBackend' in AUTHENTICATION_BACKENDS
 if OAUTH_AUTHENTICATION:
